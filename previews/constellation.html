@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Prelua — Constellation (concept preview)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" />
+<style>
+/* ═══════════════════════════════════════════════════════════════════════════
+   CONCEPT A — THE CONSTELLATION
+
+   Takes the gold motes from the app icon as the organising idea.
+
+   A field of scattered gold points drifts over deep navy. As you scroll they
+   ORGANISE: scatter → a mood trend line → the five weighted score components
+   → the Wellness Score ring → then disperse upward.
+
+   The page performs the product's actual claim. Scattered signals composite
+   into a state model. That argument is made before anyone reads a word.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:root{
+  --ink-950:#04050f; --ink-900:#06081f; --ink-850:#0b0e28; --ink-700:#1e2340;
+  --mist-100:#f6f2ec; --mist-300:#c6c0b6; --mist-400:#969084; --mist-500:#6f6a61;
+  --gold-200:#f2ce93; --gold-300:#e6ae5b; --copper:#af7648;
+  --sans:'Inter',ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --serif:'Instrument Serif',ui-serif,Georgia,'Times New Roman',serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--ink-900); color:var(--mist-100);
+  font-family:var(--sans); -webkit-font-smoothing:antialiased; overflow-x:hidden;
+}
+#field{position:fixed; inset:0; z-index:0; pointer-events:none}
+.wrap{position:relative; z-index:1; max-width:1080px; margin:0 auto; padding:0 20px}
+@media(min-width:640px){.wrap{padding:0 32px}}
+
+/* The stage label is preview-only scaffolding — it names which formation the
+   particles are holding, so the effect is legible while judging it. */
+.stage{
+  position:fixed; z-index:3; right:20px; bottom:20px;
+  font-size:11px; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--mist-500); background:rgba(6,8,31,.72); backdrop-filter:blur(8px);
+  border:1px solid var(--ink-700); border-radius:999px; padding:7px 13px;
+}
+.badge{
+  display:inline-flex; align-items:center; gap:9px; font-size:12px; color:var(--mist-400);
+  border:1px solid var(--ink-700); background:rgba(11,14,40,.6); backdrop-filter:blur(8px);
+  border-radius:999px; padding:6px 14px;
+}
+.dot{width:6px;height:6px;border-radius:99px;background:var(--gold-300)}
+
+header{display:flex;align-items:center;gap:11px;padding:26px 0}
+header img{width:30px;height:30px;border-radius:99px}
+header b{font-size:17px;letter-spacing:-.02em;font-weight:600}
+
+section{padding:14vh 0}
+h1{
+  font-family:var(--serif); font-weight:400; margin:26px 0 0;
+  font-size:clamp(3rem,9vw,5.4rem); line-height:.98; letter-spacing:-.02em;
+}
+h1 em{font-style:normal;color:var(--gold-200)}
+h2{
+  font-family:var(--serif); font-weight:400; margin:14px 0 0;
+  font-size:clamp(2rem,4.4vw,2.9rem); line-height:1.06; letter-spacing:-.015em;
+  max-width:16em;
+}
+.kicker{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-300);margin:0;font-weight:600}
+p.lead{font-size:clamp(1.02rem,1.6vw,1.16rem); line-height:1.65; color:var(--mist-300); max-width:31em; margin:22px 0 0}
+p.sub{font-size:.95rem;line-height:1.7;color:var(--mist-400);max-width:32em;margin:16px 0 0}
+.hold{min-height:62vh}
+
+.grid{display:grid;gap:18px;margin-top:38px}
+@media(min-width:860px){.grid{max-width:53%}.grid.two{grid-template-columns:1fr 1fr}.grid.three{grid-template-columns:1fr}}
+.card{
+  border:1px solid var(--ink-700); background:rgba(11,14,40,.55); backdrop-filter:blur(10px);
+  border-radius:18px; padding:24px;
+}
+.card h3{margin:0;font-size:.92rem;font-weight:600;color:var(--mist-100)}
+.card p{margin:11px 0 0;font-size:.9rem;line-height:1.65;color:var(--mist-400)}
+.card .w{float:right;font-size:.85rem;color:var(--gold-300);font-variant-numeric:tabular-nums}
+
+form{display:flex;gap:10px;margin-top:32px;max-width:460px;flex-wrap:wrap}
+input{
+  flex:1 1 200px; min-width:0; padding:13px 16px; font:inherit; font-size:.92rem;
+  color:var(--mist-100); background:var(--ink-850); border:1px solid var(--ink-700); border-radius:13px;
+}
+input::placeholder{color:var(--mist-500)}
+button{
+  padding:13px 20px; font:inherit; font-size:.92rem; font-weight:600; cursor:pointer;
+  color:var(--ink-950); border:0; border-radius:13px;
+  background:linear-gradient(100deg,var(--copper),var(--gold-300));
+}
+.fine{font-size:.76rem;color:var(--mist-500);margin:11px 0 0}
+footer{padding:8vh 0 12vh;border-top:1px solid var(--ink-700);margin-top:10vh}
+footer p{font-size:.78rem;color:var(--mist-500);line-height:1.7;max-width:44em}
+
+.reveal{opacity:0;transform:translateY(18px);transition:opacity .7s ease,transform .7s ease}
+.reveal.in{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){
+  .reveal{opacity:1;transform:none;transition:none}
+}
+</style>
+</head>
+<body>
+
+<canvas id="field" aria-hidden="true"></canvas>
+<div class="stage" id="stage">Scatter</div>
+
+<div class="wrap">
+
+  <header>
+    <img src="data:image/jpeg;base64,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" alt="" />
+    <b>Prelua</b>
+  </header>
+
+  <section>
+    <span class="badge"><span class="dot"></span>Pre-launch — private testing</span>
+    <h1>It knows<br /><em>before you do.</em></h1>
+    <p class="lead">
+      Every wellness app on your phone is a content library that waits. Prelua builds a living
+      model of your mental wellness from the signals you already generate — then acts on it.
+    </p>
+    <form onsubmit="return false">
+      <input type="email" placeholder="you@email.com" aria-label="Email" />
+      <button>Join the waitlist</button>
+    </form>
+    <p class="fine">One email before launch. Nothing else.</p>
+  </section>
+
+  <section class="hold reveal">
+    <p class="kicker">Signal ingestion</p>
+    <h2>Every tap is a data point.</h2>
+    <p class="lead">
+      What you open, what you skip, when your phone goes quiet, how your check-ins trend. Scattered,
+      individually meaningless, continuously generated whether you engage or not.
+    </p>
+    <p class="sub">Watch them organise as you scroll.</p>
+  </section>
+
+  <section class="hold reveal">
+    <p class="kicker">Mood trend · 30%</p>
+    <h2>Direction outranks level.</h2>
+    <p class="lead">
+      A rolling seven-day average of your check-ins. Climbing from 2 to 3 scores higher than sitting
+      flat at 4 — because the trajectory is the signal, not the snapshot.
+    </p>
+  </section>
+
+  <section class="hold reveal">
+    <p class="kicker">Five weighted components</p>
+    <h2>Weighted by how hard they are to fake.</h2>
+    <div class="grid three">
+      <div class="card"><span class="w">30%</span><h3>Mood trend</h3><p>Seven-day rolling direction.</p></div>
+      <div class="card"><span class="w">25%</span><h3>Engagement</h3><p>Completion, saves, notification opens.</p></div>
+      <div class="card"><span class="w">20%</span><h3>Consistency</h3><p>Against your own baseline, never a universal one.</p></div>
+    </div>
+    <div class="grid two">
+      <div class="card"><span class="w">15%</span><h3>Sleep proxy</h3><p>Stability of phone-inactive hours.</p></div>
+      <div class="card"><span class="w">10%</span><h3>Passive signal</h3><p>Session rhythm, category breadth, response latency.</p></div>
+    </div>
+  </section>
+
+  <section class="hold reveal">
+    <p class="kicker">The Wellness Score</p>
+    <h2>One number the product actually acts on.</h2>
+    <p class="lead">
+      Zero to a hundred, recalculated daily. Not a badge and not a diagnosis — the input that decides
+      what arrives next, and when.
+    </p>
+    <p class="sub">
+      Three days of Tired · Work stress, four of five meditations completed, bedtimes drifting later:
+      59.5 out of 100. Vulnerable. Delivery shifts toward stress relief and sleep support before the
+      next check-in says anything is wrong.
+    </p>
+  </section>
+
+  <section class="hold reveal">
+    <p class="kicker">Scientific foundation</p>
+    <h2>Not invented. Implemented.</h2>
+    <p class="lead">
+      A direct implementation of JITAI — Just-In-Time Adaptive Interventions — the intervention-design
+      framework from behavioural health research, evaluated across smoking cessation, physical
+      activity, alcohol use, stress and mental-health support.
+    </p>
+  </section>
+
+  <section class="reveal">
+    <h2>It knows before you do.</h2>
+    <p class="lead">iOS first, United States. Leave an email and we&rsquo;ll tell you once — when it&rsquo;s live.</p>
+    <form onsubmit="return false">
+      <input type="email" placeholder="you@email.com" aria-label="Email" />
+      <button>Join the waitlist</button>
+    </form>
+  </section>
+
+  <footer>
+    <p>
+      <strong style="color:var(--mist-400)">Concept preview A — Constellation.</strong>
+      Prelua is not a medical device and does not provide medical advice, diagnosis or treatment.
+      SAVVNIONNIX TECHNOLOGY PRIVATE LIMITED.
+    </p>
+  </footer>
+
+</div>
+
+<script>
+(function () {
+  const canvas = document.getElementById('field')
+  const ctx = canvas.getContext('2d')
+  const stageLabel = document.getElementById('stage')
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
+
+  let W = 0, H = 0, dpr = 1, N = 150, mobile = false
+  const P = []
+
+  function resize () {
+    dpr = Math.min(devicePixelRatio || 1, 2)
+    W = canvas.width = innerWidth * dpr
+    H = canvas.height = innerHeight * dpr
+    canvas.style.width = innerWidth + 'px'
+    canvas.style.height = innerHeight + 'px'
+    mobile = innerWidth < 860
+    N = mobile ? 90 : 160
+    build()
+  }
+
+  // Every particle carries three STABLE randoms. Formations must be pure
+  // functions of these — calling Math.random() inside a formation moves the
+  // target every frame, so the particles chase it forever and the shape never
+  // resolves. That was the bug in the first pass.
+  function build () {
+    P.length = 0
+    for (let i = 0; i < N; i++) {
+      P.push({
+        x: Math.random() * W, y: Math.random() * H,
+        hx: Math.random() * W, hy: Math.random() * H,
+        u: Math.random(), v: Math.random(), w: Math.random(),
+        r: (Math.random() * 1.4 + 0.9) * dpr,
+        a: Math.random() * 0.45 + 0.4,
+        ph: Math.random() * Math.PI * 2,
+        sp: Math.random() * 0.5 + 0.35,
+      })
+    }
+  }
+
+  // The formation zone. On desktop it sits in the right third so the copy,
+  // which is capped at 34em on the left, is never drawn over. On mobile the
+  // text is full width, so formations drop into the lower band and dim.
+  function zone () {
+    return mobile
+      ? { x: W * 0.10, y: H * 0.46, w: W * 0.80, h: H * 0.40, dim: 0.55 }
+      : { x: W * 0.58, y: H * 0.16, w: W * 0.36, h: H * 0.66, dim: 1 }
+  }
+
+  function fScatter (p) { return [p.hx, p.hy, 0.75] }
+
+  // Seven-point mood trend: dips midweek, recovers.
+  const TREND = [0.34, 0.46, 0.40, 0.20, 0.27, 0.55, 0.68]
+  function fTrend (p) {
+    const z = zone()
+    const t = p.u
+    const seg = t * (TREND.length - 1)
+    const a = Math.floor(seg), b = Math.min(a + 1, TREND.length - 1)
+    const f = seg - a
+    const eased = f * f * (3 - 2 * f)
+    const val = TREND[a] + (TREND[b] - TREND[a]) * eased
+    const jitter = (p.v - 0.5) * z.h * 0.035
+    return [z.x + t * z.w, z.y + z.h * (1 - val) + jitter, 1]
+  }
+
+  // The score dial. Particles before the 59.5% mark are bright and form the
+  // filled arc; the rest complete the track at low alpha.
+  const SCORE = 0.595
+  function fRing (p) {
+    const z = zone()
+    const cx = z.x + z.w / 2
+    const cy = z.y + z.h / 2
+    const rad = Math.min(z.w, z.h) * 0.44 + (p.v - 0.5) * 6 * dpr
+    const ang = -Math.PI / 2 + p.u * Math.PI * 2
+    return [cx + Math.cos(ang) * rad, cy + Math.sin(ang) * rad, p.u < SCORE ? 1 : 0.18]
+  }
+
+  // Disperse upward — the rise out of the water.
+  function fRise (p) {
+    const z = zone()
+    return [z.x + p.u * z.w + (p.v - 0.5) * z.w * 0.3, H * 0.9 - p.w * H * 0.95, 0.85]
+  }
+
+  // Four formations, not five. A bar-chart stage was cut: with the weight
+  // cards sitting right beside it, the particles were repeating information
+  // the page already stated, and at this particle count a five-column chart
+  // reads as a cloud rather than as bars. The trend holds through that
+  // section instead.
+  const STAGES = [
+    { at: 0.00, fn: fScatter, name: 'Scatter' },
+    { at: 0.16, fn: fTrend,   name: 'Mood trend' },
+    { at: 0.48, fn: fRing,    name: 'Wellness Score · 59.5' },
+    { at: 0.82, fn: fRise,    name: 'The rise' },
+  ]
+
+  function scrollProgress () {
+    const max = document.body.scrollHeight - innerHeight
+    return max > 0 ? Math.min(1, Math.max(0, scrollY / max)) : 0
+  }
+
+  function currentStage (t) {
+    let s = STAGES[0]
+    for (const st of STAGES) if (t >= st.at) s = st
+    return s
+  }
+
+  let last = 0
+  function frame (now) {
+    // ~40fps. The motion is slow and diffuse; more frames cost battery and
+    // buy nothing anyone can see.
+    if (now - last < 25) { requestAnimationFrame(frame); return }
+    last = now
+
+    const st = currentStage(scrollProgress())
+    if (stageLabel.textContent !== st.name) stageLabel.textContent = st.name
+
+    const z = zone()
+    ctx.clearRect(0, 0, W, H)
+
+    for (let i = 0; i < N; i++) {
+      const p = P[i]
+      const [tx, ty, am] = st.fn(p)
+      // Fast enough that a shape resolves well before you scroll past it.
+      p.x += (tx - p.x) * 0.085
+      p.y += (ty - p.y) * 0.085
+      p.ph += 0.007 * p.sp
+      const dx = Math.cos(p.ph) * 1.4 * dpr
+      const dy = Math.sin(p.ph * 0.8) * 1.4 * dpr
+      const alpha = p.a * am * z.dim
+
+      const g = ctx.createRadialGradient(p.x + dx, p.y + dy, 0, p.x + dx, p.y + dy, p.r * 4)
+      g.addColorStop(0, 'rgba(242,206,147,' + alpha + ')')
+      g.addColorStop(1, 'rgba(230,174,91,0)')
+      ctx.fillStyle = g
+      ctx.beginPath()
+      ctx.arc(p.x + dx, p.y + dy, p.r * 4, 0, Math.PI * 2)
+      ctx.fill()
+
+      ctx.fillStyle = 'rgba(246,242,236,' + (alpha * 0.85) + ')'
+      ctx.beginPath()
+      ctx.arc(p.x + dx, p.y + dy, p.r * 0.55, 0, Math.PI * 2)
+      ctx.fill()
+    }
+
+    requestAnimationFrame(frame)
+  }
+
+  addEventListener('resize', resize)
+  resize()
+
+  if (reduced) {
+    stageLabel.textContent = 'Reduced motion'
+    ctx.clearRect(0, 0, W, H)
+    for (const p of P) {
+      ctx.fillStyle = 'rgba(242,206,147,' + p.a * 0.7 + ')'
+      ctx.beginPath(); ctx.arc(p.hx, p.hy, p.r, 0, Math.PI * 2); ctx.fill()
+    }
+  } else {
+    requestAnimationFrame(frame)
+  }
+
+  const io = new IntersectionObserver(
+    (es) => es.forEach((e) => e.isIntersecting && e.target.classList.add('in')),
+    { rootMargin: '0px 0px -12% 0px' },
+  )
+  document.querySelectorAll('.reveal').forEach((el) => io.observe(el))
+})()
+</script>
+</body>
+</html>
